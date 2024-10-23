@@ -1,0 +1,73 @@
+---
+- name: Update web and NFS servers
+  hosts: webservers, nfs
+  remote_user: ec2-user
+  become: true
+  become_user: root
+  tasks:
+    - name: Ensure wireshark is at the latest version
+      yum: 
+        name: wireshark
+        state: latest
+    
+    - name: Create a directory
+      file:
+        path: /opt/Kosenuel_directory
+        state: directory
+        mode: '0755'
+
+    - name: Create a file inside the directory
+      file:
+        path: /opt/Kosenuel_directory/Kose_file.txt
+        state: touch
+        mode: '0644'
+
+    - name: Change timezone
+      timezone:
+        name: Nigeria/Lagos
+
+    - name: Run a shell script
+      shell: |
+        echo "Hello from $(hostname)" > /tmp/server_greeting.txt
+        date >> /tmp/server_greeting.txt
+      args:
+        executable: /bin/bash
+
+
+- name: Update LB and DB servers
+  hosts: lb, db
+  remote_user: ubuntu
+  become: true
+  become_user: root
+  tasks:
+    - name: Update apt repo
+      apt:
+        update_cache: yes
+
+    - name: Ensure wireshark is at the latest version
+      apt:
+        name: wireshark
+        state: latest
+
+    - name: Create a directory
+      file:
+        path: /opt/Kosenuel_directory
+        state: directory
+        mode: '0755'
+
+    - name: Create a file inside the directory
+      file:
+        path: /opt/Kosenuel_directory/Kose_file.txt
+        state: touch
+        mode:'0644'
+
+    - name: Change timezone
+      timezone:
+        name: Ghana/Accra
+
+    - name: Run a shell script
+      shell: | 
+        echo "Greetings from $(hostname)" > /tmp/server_greeting.txt
+        date >> /tmp/server_greeting.txt
+      args:
+        executable: /bin/bash
