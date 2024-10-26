@@ -6,4 +6,5 @@
 - This is the third retry, therefore v3.0
 - This is thee fourth edit, therefore v4.0
 - This is my fifth edit, therefore v5.0
-- This is my sixth edit, therefore v6.0s
+- This is my sixth edit, therefore v6.0
+- This is my seventh edit, therefore v7.0 brotherly
