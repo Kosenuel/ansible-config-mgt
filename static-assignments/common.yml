@@ -24,7 +24,7 @@
 
     - name: Change timezone
       timezone:
-        name: Nigeria/Lagos
+        name: Africa/Lagos
 
     - name: Run a shell script
       shell: |
@@ -32,7 +32,6 @@
         date >> /tmp/server_greeting.txt
       args:
         executable: /bin/bash
-
 
 - name: Update LB and DB servers
   hosts: lb, db
@@ -59,11 +58,11 @@
       file:
         path: /opt/Kosenuel_directory/Kose_file.txt
         state: touch
-        mode:'0644'
+        mode: '0644'
 
     - name: Change timezone
       timezone:
-        name: Ghana/Accra
+        name: Africa/Accra
 
     - name: Run a shell script
       shell: | 
@@ -71,3 +70,23 @@
         date >> /tmp/server_greeting.txt
       args:
         executable: /bin/bash
+
+- name: Update package manager repositories on all hosts
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Update APT package manager (Debian/Ubuntu)
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Update YUM package manager (RedHat/CentOS)
+      yum:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Update DNF package manager (Fedora)
+      dnf:
+        update_cache: yes
+      when: ansible_distribution == "Fedora"
