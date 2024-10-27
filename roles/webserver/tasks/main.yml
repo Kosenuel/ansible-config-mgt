@@ -20,12 +20,12 @@
   ansible.builtin.command: cp -r /var/www/html/html/ /var/www/
 
 - name: Start Apache service
-  ansible.builtn.service:
+  ansible.builtin.service:
     name: httpd
     state: started
 
 - name: Remove the cloned directory
-  ansible.builtin.file
-  path: /var/www/html/html
-  state: absent
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
   
