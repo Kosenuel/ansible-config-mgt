@@ -1,0 +1,51 @@
+---
+- name: Create PHP file on UAT servers
+  hosts: uat-webservers
+  become: true
+  tasks:
+    - name: Check if the document root directory exists
+      ansible.builtin.stat:
+       path: /var/www/html
+      register: doc_root_stat
+
+    - name: Check if the PHP file exists
+      ansible.builtin.stat:
+        path: /var/www/html/status.php
+      register: php_file_stat
+
+    - name: Ensure Apache document root directory exists
+      ansible.builtin.file:
+        path: /var/www/html
+        state: directory
+      when: not doc_root_stat.stat.exists
+    
+    - name: Create PHP file
+      ansible.builtin.copy:
+        dest: /var/www/html/status.php
+        content: |
+          <?php
+          echo "<h1>Server Information</h1>";
+          phpinfo();
+          ?>
+        mode: '0644'
+      when: not doc_root_stat.stat.exists or not php_file_stat.stat.exists
+
+
+- name: Test Servers
+  hosts: uat-webservers
+  tasks:
+    - name: Check if Apache is running
+      service_facts:
+      register: service_state
+
+    - name: Verify the port Apache is listening on
+      wait_for:
+        port: 80
+        timeout: 5
+
+    - name: Test webpage response
+      uri:
+        url: "http://localhost/status.php"
+        return_content: yes
+      register: webpage
+      failed_when: "'Server Information' not in webpage.content"
